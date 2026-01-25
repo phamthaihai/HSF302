@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -16,17 +17,23 @@ import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"com.example.service", "com.example.dao"})
+@ComponentScan("com.example")
 public class RootConfig {
 
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        ds.setUrl("jdbc:sqlserver://localhost:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
+        ds.setUrl("jdbc:sqlserver://192.168.1.28:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
         ds.setUsername("sa");
-        ds.setPassword("123");
+        ds.setPassword("VeryStr0ngP@ssw0rd");
         return ds;
+    }
+
+    // ✅ THÊM CÁI NÀY
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean
@@ -37,10 +44,9 @@ public class RootConfig {
         emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties props = new Properties();
-        props.put("hibernate.dialect", "org.hibernate.dialect.SQLServerDialect");
         props.put("hibernate.show_sql", "true");
         props.put("hibernate.format_sql", "true");
-        props.put("hibernate.hbm2ddl.auto", "validate"); // đổi "update" nếu bạn muốn Hibernate auto update
+        props.put("hibernate.hbm2ddl.auto", "validate");
         emf.setJpaProperties(props);
 
         return emf;
