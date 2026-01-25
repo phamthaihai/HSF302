@@ -1,18 +1,15 @@
 package com.example.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import javax.sql.DataSource;
+import org.springframework.context.annotation.Bean;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.example")
+@ComponentScan(basePackages = "com.example.controller")
 public class WebConfig implements WebMvcConfigurer {
 
     @Bean
@@ -23,18 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
         return resolver;
     }
 
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        dataSource.setUrl("jdbc:sqlserver://localhost:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("12345");
-        return dataSource;
-    }
-
-    @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
+    @Override
+    public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/assets/**")
+                .addResourceLocations("/assets/");
     }
 }
