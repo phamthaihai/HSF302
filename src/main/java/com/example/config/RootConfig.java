@@ -28,7 +28,6 @@ public class RootConfig {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         ds.setUrl("jdbc:sqlserver://localhost:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
-        ds.setUrl("jdbc:sqlserver://192.168.1.4:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
         ds.setUsername("sa");
         ds.setPassword("12345");
         return ds;
