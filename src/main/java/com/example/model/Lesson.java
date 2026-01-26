@@ -23,6 +23,8 @@ public class Lesson {
     @Column(name = "video_url")
     private String videoUrl;
 
+    public Lesson() {}
+
     public Integer getLessonId() {
         return lessonId;
     }
