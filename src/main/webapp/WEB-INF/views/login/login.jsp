@@ -8,7 +8,8 @@
     <title>Login | AssignmentHSF</title>
 
     <!-- CSS (Cách 1: assets nằm ngoài WEB-INF) -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=1">
+
 
     <!-- Optional: Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
