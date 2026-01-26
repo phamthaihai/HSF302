@@ -1,4 +1,4 @@
-package com.example.entity;
+package com.example.model;
 
 import jakarta.persistence.*;
 
@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "lessons")
 public class Lesson {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lesson_id")
     private Integer lessonId;
 
@@ -15,6 +16,9 @@ public class Lesson {
 
     @Column(name = "title")
     private String title;
+
+    @Column(name = "content")
+    private String content;
 
     @Column(name = "video_url")
     private String videoUrl;
@@ -41,6 +45,14 @@ public class Lesson {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getVideoUrl() {
