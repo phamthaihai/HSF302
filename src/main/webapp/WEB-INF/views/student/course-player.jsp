@@ -64,7 +64,8 @@
                         <span>${doneLessons}/${totalLessons}</span>
                     </div>
 
-                    <div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0"
+                         aria-valuemax="100">
                         <div class="progress-bar" style="width:${pct}%"></div>
                     </div>
 
