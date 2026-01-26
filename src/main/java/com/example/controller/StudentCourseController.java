@@ -1,13 +1,12 @@
-package com.example.controller.student;
+package com.example.controller;
 
-import com.example.dao.CourseDao;
-import com.example.dao.LessonDao;
-import com.example.entity.Course;
-import com.example.entity.Feedback;
-import com.example.entity.Lesson;
-import com.example.entity.Certificate;
+import com.example.model.Course;
+import com.example.model.Feedback;
+import com.example.model.Lesson;
+import com.example.model.Certificate;
+import com.example.repository.CourseRepository;
+import com.example.repository.LessonRepository;
 import com.example.service.*;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,24 +21,24 @@ public class StudentCourseController {
     private final CoursePlayerService playerService;
     private final FeedbackService feedbackService;
     private final CertificateService certificateService;
-    private final CourseDao courseDao;
-    private final LessonDao lessonDao;
+
+    private final CourseRepository courseRepository;
+    private final LessonRepository lessonRepository;
 
     public StudentCourseController(StudentCourseService studentCourseService,
                                    CoursePlayerService playerService,
                                    FeedbackService feedbackService,
                                    CertificateService certificateService,
-                                   CourseDao courseDao,
-                                   LessonDao lessonDao) {
+                                   CourseRepository courseRepository,
+                                   LessonRepository lessonRepository) {
         this.studentCourseService = studentCourseService;
         this.playerService = playerService;
         this.feedbackService = feedbackService;
         this.certificateService = certificateService;
-        this.courseDao = courseDao;
-        this.lessonDao = lessonDao;
+        this.courseRepository = courseRepository;
+        this.lessonRepository = lessonRepository;
     }
 
-    // demo login: hardcode
     private int currentUserId() {
         return 3;
     }
@@ -58,11 +57,14 @@ public class StudentCourseController {
         int userId = currentUserId();
         studentCourseService.requireRegistered(userId, courseId);
 
-        Course course = courseDao.findById(courseId);
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
         List<Lesson> lessons = playerService.getLessons(courseId);
 
-        if (lessonId == null && !lessons.isEmpty()) lessonId = lessons.get(0).getLessonId();
-        Lesson currentLesson = (lessonId == null) ? null : lessonDao.findById(lessonId);
+        if (lessonId == null && !lessons.isEmpty())
+            lessonId = lessons.get(0).getLessonId();
+        Lesson currentLesson = (lessonId == null) ? null : lessonRepository.findById(lessonId).orElse(null);
 
         model.addAttribute("course", course);
         model.addAttribute("lessons", lessons);
@@ -87,7 +89,7 @@ public class StudentCourseController {
         studentCourseService.requireRegistered(userId, courseId);
 
         Feedback fb = feedbackService.getMyFeedback(userId, courseId);
-        model.addAttribute("course", courseDao.findById(courseId));
+        model.addAttribute("course", courseRepository.findById(courseId).orElse(null));
         model.addAttribute("feedback", fb);
 
         return "student/course-feedback";
@@ -111,7 +113,7 @@ public class StudentCourseController {
 
         Certificate cert = certificateService.issueIfEligible(userId, courseId);
 
-        model.addAttribute("course", courseDao.findById(courseId));
+        model.addAttribute("course", courseRepository.findById(courseId).orElse(null));
         model.addAttribute("certificate", cert);
 
         return "student/certificate";
