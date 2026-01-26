@@ -1,10 +1,9 @@
 package com.example.service;
 
-import com.example.dao.FeedbackDao;
-import com.example.dao.CourseDao;
-import com.example.entity.Course;
-import com.example.entity.Feedback;
-import com.example.entity.User;
+import com.example.model.Feedback;
+import com.example.repository.CourseRepository;
+import com.example.repository.FeedbackRepository;
+import com.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,34 +12,40 @@ import java.time.LocalDateTime;
 @Service
 public class FeedbackService {
 
-    private final FeedbackDao feedbackDao;
-    private final CourseDao courseDao;
+    private final FeedbackRepository feedbackRepository;
+    private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
 
-    public FeedbackService(FeedbackDao feedbackDao, CourseDao courseDao) {
-        this.feedbackDao = feedbackDao;
-        this.courseDao = courseDao;
+    public FeedbackService(FeedbackRepository feedbackRepository,
+                           CourseRepository courseRepository,
+                           UserRepository userRepository) {
+        this.feedbackRepository = feedbackRepository;
+        this.courseRepository = courseRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional(readOnly = true)
     public Feedback getMyFeedback(int userId, int courseId) {
-        return feedbackDao.findByUserAndCourse(userId, courseId);
+        return feedbackRepository.findByUser_UserIdAndCourse_CourseId(userId, courseId).orElse(null);
     }
 
     @Transactional
     public void submit(int userId, int courseId, int rating, String comment) {
-        Course course = courseDao.findById(courseId);
-        if (course == null) throw new RuntimeException("Course not found");
+        var course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+        var userRef = userRepository.getReferenceById(userId);
 
-        Feedback f = feedbackDao.findByUserAndCourse(userId, courseId);
-        if (f == null) {
-            f = new Feedback();
-            User u = new User(); u.setUserId(userId);
-            f.setUser(u);
-            f.setCourse(course);
-            f.setCreatedAt(LocalDateTime.now());
-        }
+        Feedback f = feedbackRepository.findByUser_UserIdAndCourse_CourseId(userId, courseId)
+                .orElseGet(() -> {
+                    Feedback x = new Feedback();
+                    x.setUser(userRef);
+                    x.setCourse(course);
+                    x.setCreatedAt(LocalDateTime.now());
+                    return x;
+                });
+
         f.setRating(rating);
         f.setComment(comment);
-        feedbackDao.saveOrUpdate(f);
+        feedbackRepository.save(f);
     }
 }
