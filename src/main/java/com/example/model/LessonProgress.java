@@ -1,5 +1,7 @@
 package com.example.entity;
 
+import com.example.model.Lesson;
+import com.example.model.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
