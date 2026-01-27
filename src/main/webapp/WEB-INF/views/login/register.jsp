@@ -76,19 +76,6 @@
                            placeholder="vd: dung@gmail.com" required />
                 </label>
 
-                <!-- Role dropdown -->
-                <label class="field">
-                    <span class="label">Role</span>
-                    <select class="input" name="roleName" required>
-                        <c:forEach var="r" items="${roles}">
-                            <option value="${r}"
-                                    <c:if test="${r == selectedRole}">selected</c:if>>
-                                    ${r}
-                            </option>
-                        </c:forEach>
-                    </select>
-                </label>
-
                 <!-- Password -->
                 <label class="field">
                     <span class="label">Password</span>
@@ -110,6 +97,9 @@
                                 onclick="toggle('pw2')" aria-label="Show password">👁</button>
                     </div>
                 </label>
+
+                <!-- hidden role: always STUDENT -->
+                <input type="hidden" name="roleName" value="STUDENT" />
 
                 <label class="check" style="margin-top: 6px;">
                     <input type="checkbox" required />

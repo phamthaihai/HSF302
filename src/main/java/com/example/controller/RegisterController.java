@@ -7,42 +7,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 public class RegisterController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // GET: show form + roles dropdown
     @GetMapping("/register")
-    public String showRegisterPage(Model model) {
-        // Lấy 3 role cần hiển thị trong dropdown
-        List<String> roles = List.of("STUDENT", "ADMIN", "INSTRUCTOR");
-        model.addAttribute("roles", roles);
-
-        // default role (optional)
-        model.addAttribute("selectedRole", "STUDENT");
-
+    public String showRegisterPage() {
         return "login/register";
     }
 
-    // POST: handle register + selected role
     @PostMapping("/register")
     public String doRegister(
             @RequestParam("fullName") String fullName,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
             @RequestParam("confirmPassword") String confirmPassword,
-            @RequestParam("roleName") String roleName,   // <-- thêm role
             Model model
     ) {
-        // để khi lỗi vẫn render lại dropdown
-        List<String> roles = List.of("STUDENT", "ADMIN", "INSTRUCTOR");
-        model.addAttribute("roles", roles);
-        model.addAttribute("selectedRole", roleName);
-
         // 1) Validate cơ bản
         if (fullName == null || fullName.trim().isEmpty()) {
             model.addAttribute("error", "Vui lòng nhập họ tên.");
@@ -61,13 +44,9 @@ public class RegisterController {
             return "login/register";
         }
 
-        // 1.1) Validate roleName (chặn role lạ)
-        if (roleName == null || !roles.contains(roleName)) {
-            model.addAttribute("error", "Role không hợp lệ.");
-            return "login/register";
-        }
+        // 2) Role mặc định là STUDENT
+        final String roleName = "STUDENT";
 
-        // 2) Lấy role_id theo roleName
         Integer roleId;
         try {
             roleId = jdbcTemplate.queryForObject(
@@ -76,7 +55,7 @@ public class RegisterController {
                     roleName
             );
         } catch (Exception ex) {
-            model.addAttribute("error", "Role chưa tồn tại trong DB. Hãy kiểm tra bảng roles.");
+            model.addAttribute("error", "Role STUDENT chưa tồn tại trong DB. Hãy kiểm tra bảng roles.");
             return "login/register";
         }
 
