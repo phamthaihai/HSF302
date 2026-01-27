@@ -1,14 +1,113 @@
 package com.example.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 public class RegisterController {
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    // GET: show form + roles dropdown
     @GetMapping("/register")
-    public String showRegisterPage() {
-        // maps tới: /WEB-INF/views/login/register.jsp
+    public String showRegisterPage(Model model) {
+        // Lấy 3 role cần hiển thị trong dropdown
+        List<String> roles = List.of("STUDENT", "ADMIN", "INSTRUCTOR");
+        model.addAttribute("roles", roles);
+
+        // default role (optional)
+        model.addAttribute("selectedRole", "STUDENT");
+
         return "login/register";
+    }
+
+    // POST: handle register + selected role
+    @PostMapping("/register")
+    public String doRegister(
+            @RequestParam("fullName") String fullName,
+            @RequestParam("email") String email,
+            @RequestParam("password") String password,
+            @RequestParam("confirmPassword") String confirmPassword,
+            @RequestParam("roleName") String roleName,   // <-- thêm role
+            Model model
+    ) {
+        // để khi lỗi vẫn render lại dropdown
+        List<String> roles = List.of("STUDENT", "ADMIN", "INSTRUCTOR");
+        model.addAttribute("roles", roles);
+        model.addAttribute("selectedRole", roleName);
+
+        // 1) Validate cơ bản
+        if (fullName == null || fullName.trim().isEmpty()) {
+            model.addAttribute("error", "Vui lòng nhập họ tên.");
+            return "login/register";
+        }
+        if (email == null || email.trim().isEmpty()) {
+            model.addAttribute("error", "Vui lòng nhập email.");
+            return "login/register";
+        }
+        if (password == null || password.isEmpty()) {
+            model.addAttribute("error", "Vui lòng nhập mật khẩu.");
+            return "login/register";
+        }
+        if (!password.equals(confirmPassword)) {
+            model.addAttribute("error", "Mật khẩu nhập lại không khớp.");
+            return "login/register";
+        }
+
+        // 1.1) Validate roleName (chặn role lạ)
+        if (roleName == null || !roles.contains(roleName)) {
+            model.addAttribute("error", "Role không hợp lệ.");
+            return "login/register";
+        }
+
+        // 2) Lấy role_id theo roleName
+        Integer roleId;
+        try {
+            roleId = jdbcTemplate.queryForObject(
+                    "SELECT role_id FROM roles WHERE role_name = ?",
+                    Integer.class,
+                    roleName
+            );
+        } catch (Exception ex) {
+            model.addAttribute("error", "Role chưa tồn tại trong DB. Hãy kiểm tra bảng roles.");
+            return "login/register";
+        }
+
+        // 3) Check trùng email
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM users WHERE email = ?",
+                Integer.class,
+                email.trim()
+        );
+        if (count != null && count > 0) {
+            model.addAttribute("error", "Email đã tồn tại. Vui lòng dùng email khác.");
+            return "login/register";
+        }
+
+        // 4) Insert user
+        try {
+            String sql = """
+                    INSERT INTO users (full_name, email, password, role_id, status)
+                    VALUES (?, ?, ?, ?, 1)
+                    """;
+            jdbcTemplate.update(sql, fullName.trim(), email.trim(), password, roleId);
+
+            model.addAttribute("message", "Tạo tài khoản thành công! Hãy đăng nhập.");
+            return "login/login";
+
+        } catch (DuplicateKeyException ex) {
+            model.addAttribute("error", "Email đã tồn tại. Vui lòng dùng email khác.");
+            return "login/register";
+        } catch (Exception ex) {
+            model.addAttribute("error", "Đăng ký thất bại: " + ex.getMessage());
+            return "login/register";
+        }
     }
 }
