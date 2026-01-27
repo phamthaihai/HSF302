@@ -2,6 +2,32 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="vi">
+<style>
+  /* Chỉ áp dụng cho trang Home (dashboard), không ảnh hưởng login/register */
+  body.dashboard .auth-wrap{
+    width: 100%;
+    max-width: none;
+    min-height: 100vh;
+    padding: 24px;
+    display: flex;
+    justify-content: center;   /* card full width nhưng vẫn đẹp */
+    align-items: stretch;
+  }
+
+  body.dashboard .auth-card{
+    width: 100%;
+    max-width: none;
+    min-height: calc(100vh - 48px);
+    border-radius: 18px;       /* muốn full tràn sát mép thì để 0 */
+    display: flex;
+  }
+
+  body.dashboard .auth-left,
+  body.dashboard .auth-right{
+    flex: 1;
+  }
+</style>
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -16,7 +42,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="auth-body">
+<body class="auth-body dashboard">
+
 <div class="auth-bg"></div>
 
 <main class="auth-wrap">

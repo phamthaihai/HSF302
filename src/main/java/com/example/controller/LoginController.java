@@ -27,6 +27,16 @@ public class LoginController {
             HttpSession session,
             Model model
     ) {
+        // 1) Validate basic
+        if (email == null || email.trim().isEmpty()) {
+            model.addAttribute("error", "Vui lòng nhập email.");
+            return "login/login";
+        }
+        if (password == null || password.isEmpty()) {
+            model.addAttribute("error", "Vui lòng nhập mật khẩu.");
+            return "login/login";
+        }
+
         String sql = """
             SELECT u.user_id, u.full_name, u.email, r.role_name
             FROM users u
@@ -37,14 +47,24 @@ public class LoginController {
         try {
             Map<String, Object> user = jdbcTemplate.queryForMap(sql, email.trim(), password);
 
+            String role = String.valueOf(user.get("role_name")); // ADMIN / INSTRUCTOR / STUDENT
+
             session.setAttribute("currentUserId", user.get("user_id"));
             session.setAttribute("currentUserName", user.get("full_name"));
             session.setAttribute("currentUserEmail", user.get("email"));
-            session.setAttribute("currentUserRole", user.get("role_name"));
+            session.setAttribute("currentUserRole", role);
 
-            return "redirect:/home";
+            // 2) Redirect theo role
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                return "redirect:/admin/home";
+            } else if ("INSTRUCTOR".equalsIgnoreCase(role)) {
+                return "redirect:/instructor/home";
+            } else {
+                return "redirect:/home"; // STUDENT
+            }
+
         } catch (Exception ex) {
-            model.addAttribute("error", "Sai email hoặc mật khẩu. Demo: dung@hsf.com / 123");
+            model.addAttribute("error", "Sai email hoặc mật khẩu.");
             return "login/login";
         }
     }

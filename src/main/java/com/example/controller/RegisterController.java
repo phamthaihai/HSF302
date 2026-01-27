@@ -7,25 +7,42 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 public class RegisterController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    // GET: show form + roles dropdown
     @GetMapping("/register")
-    public String showRegisterPage() {
-        return "login/register"; // /WEB-INF/views/login/register.jsp
+    public String showRegisterPage(Model model) {
+        // Lấy 3 role cần hiển thị trong dropdown
+        List<String> roles = List.of("STUDENT", "ADMIN", "INSTRUCTOR");
+        model.addAttribute("roles", roles);
+
+        // default role (optional)
+        model.addAttribute("selectedRole", "STUDENT");
+
+        return "login/register";
     }
 
+    // POST: handle register + selected role
     @PostMapping("/register")
     public String doRegister(
             @RequestParam("fullName") String fullName,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
             @RequestParam("confirmPassword") String confirmPassword,
+            @RequestParam("roleName") String roleName,   // <-- thêm role
             Model model
     ) {
+        // để khi lỗi vẫn render lại dropdown
+        List<String> roles = List.of("STUDENT", "ADMIN", "INSTRUCTOR");
+        model.addAttribute("roles", roles);
+        model.addAttribute("selectedRole", roleName);
+
         // 1) Validate cơ bản
         if (fullName == null || fullName.trim().isEmpty()) {
             model.addAttribute("error", "Vui lòng nhập họ tên.");
@@ -35,28 +52,39 @@ public class RegisterController {
             model.addAttribute("error", "Vui lòng nhập email.");
             return "login/register";
         }
+        if (password == null || password.isEmpty()) {
+            model.addAttribute("error", "Vui lòng nhập mật khẩu.");
+            return "login/register";
+        }
         if (!password.equals(confirmPassword)) {
             model.addAttribute("error", "Mật khẩu nhập lại không khớp.");
             return "login/register";
         }
 
-        // 2) Lấy role_id cho STUDENT (nếu chưa có thì fallback 1)
+        // 1.1) Validate roleName (chặn role lạ)
+        if (roleName == null || !roles.contains(roleName)) {
+            model.addAttribute("error", "Role không hợp lệ.");
+            return "login/register";
+        }
+
+        // 2) Lấy role_id theo roleName
         Integer roleId;
         try {
             roleId = jdbcTemplate.queryForObject(
                     "SELECT role_id FROM roles WHERE role_name = ?",
                     Integer.class,
-                    "STUDENT"
+                    roleName
             );
         } catch (Exception ex) {
-            roleId = 1; // fallback (tuỳ DB bạn)
+            model.addAttribute("error", "Role chưa tồn tại trong DB. Hãy kiểm tra bảng roles.");
+            return "login/register";
         }
 
         // 3) Check trùng email
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM users WHERE email = ?",
                 Integer.class,
-                email
+                email.trim()
         );
         if (count != null && count > 0) {
             model.addAttribute("error", "Email đã tồn tại. Vui lòng dùng email khác.");
@@ -71,11 +99,9 @@ public class RegisterController {
                     """;
             jdbcTemplate.update(sql, fullName.trim(), email.trim(), password, roleId);
 
-            // Đăng ký xong -> quay lại login và báo message
             model.addAttribute("message", "Tạo tài khoản thành công! Hãy đăng nhập.");
             return "login/login";
 
-            // Nếu bạn muốn redirect + flash message thì cần RedirectAttributes (nâng cao)
         } catch (DuplicateKeyException ex) {
             model.addAttribute("error", "Email đã tồn tại. Vui lòng dùng email khác.");
             return "login/register";

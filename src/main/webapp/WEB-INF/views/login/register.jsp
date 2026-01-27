@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Register | AssignmentHSF</title>
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=<%=System.currentTimeMillis()%>">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=1">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,34 +59,55 @@
             </c:if>
 
             <form class="form" method="post" action="${pageContext.request.contextPath}/register">
+
+                <!-- Full name -->
                 <label class="field">
                     <span class="label">Full name</span>
-                    <input class="input" type="text" name="fullName" placeholder="vd: Dũng Trịnh" required />
+                    <input class="input" type="text" name="fullName"
+                           value="${param.fullName}"
+                           placeholder="vd: Dũng Trịnh" required />
                 </label>
 
+                <!-- Email -->
                 <label class="field">
-                    <span class="label">Email</span>
-                    <input class="input" type="email" name="email" placeholder="vd: dung@gmail.com" required />
+                    <span class="label">Email (dùng để đăng nhập)</span>
+                    <input class="input" type="email" name="email"
+                           value="${param.email}"
+                           placeholder="vd: dung@gmail.com" required />
                 </label>
 
+                <!-- Role dropdown -->
                 <label class="field">
-                    <span class="label">Username</span>
-                    <input class="input" type="text" name="username" placeholder="vd: dungtrinh" required />
+                    <span class="label">Role</span>
+                    <select class="input" name="roleName" required>
+                        <c:forEach var="r" items="${roles}">
+                            <option value="${r}"
+                                    <c:if test="${r == selectedRole}">selected</c:if>>
+                                    ${r}
+                            </option>
+                        </c:forEach>
+                    </select>
                 </label>
 
+                <!-- Password -->
                 <label class="field">
                     <span class="label">Password</span>
                     <div class="input-wrap">
-                        <input id="pw" class="input" type="password" name="password" placeholder="••••••••" required />
-                        <button type="button" class="toggle" onclick="toggle('pw')" aria-label="Show password">👁</button>
+                        <input id="pw" class="input" type="password"
+                               name="password" placeholder="••••••••" required />
+                        <button type="button" class="toggle"
+                                onclick="toggle('pw')" aria-label="Show password">👁</button>
                     </div>
                 </label>
 
+                <!-- Confirm password -->
                 <label class="field">
                     <span class="label">Confirm password</span>
                     <div class="input-wrap">
-                        <input id="pw2" class="input" type="password" name="confirmPassword" placeholder="••••••••" required />
-                        <button type="button" class="toggle" onclick="toggle('pw2')" aria-label="Show password">👁</button>
+                        <input id="pw2" class="input" type="password"
+                               name="confirmPassword" placeholder="••••••••" required />
+                        <button type="button" class="toggle"
+                                onclick="toggle('pw2')" aria-label="Show password">👁</button>
                     </div>
                 </label>
 
