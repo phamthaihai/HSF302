@@ -74,15 +74,11 @@
                     <span class="btn-arrow">→</span>
                 </a>
 
-                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/instructor/courses">
-                    📚 Quản lý khoá học của tôi
+                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/course">
+                    📚 Manage lesson
                     <span class="btn-arrow">→</span>
                 </a>
 
-                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/instructor/course/create">
-                    ➕ Tạo khoá học mới
-                    <span class="btn-arrow">→</span>
-                </a>
 
                 <a class="btn btn-ghost" href="${pageContext.request.contextPath}/instructor/students">
                     👨‍🎓 Danh sách học viên
