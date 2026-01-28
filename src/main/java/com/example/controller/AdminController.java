@@ -1,10 +1,11 @@
 package com.example.controller;
 
-import com.example.model.UserAccount;
+import com.example.model.User;
 import com.example.service.AdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin")
@@ -32,13 +33,13 @@ public class AdminController {
     // ================= ADD USER FORM =================
     @GetMapping("/users/add")
     public String addUserForm(Model model) {
-        model.addAttribute("user", new UserAccount());
+        model.addAttribute("user", new User());
         return "admin/user-add";
     }
 
     // ================= SAVE USER =================
     @PostMapping("/users/add")
-    public String saveUser(@ModelAttribute UserAccount user, Model model) {
+    public String saveUser(@ModelAttribute User user, Model model) {
 
         try {
             service.addUser(user);
@@ -60,7 +61,7 @@ public class AdminController {
 
     // ===== SAVE UPDATE =====
     @PostMapping("/users/edit")
-    public String updateUser(@ModelAttribute UserAccount user, Model model) {
+    public String updateUser(@ModelAttribute User user, Model model) {
 
         try {
             service.updateUser(user);
@@ -70,6 +71,17 @@ public class AdminController {
             model.addAttribute("user", user);
             return "admin/user-edit";
         }
+    }
+
+    @GetMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable("id") int id, RedirectAttributes ra) {
+        try {
+            service.deleteUser(id);
+            ra.addFlashAttribute("success", "Xóa tài khoản thành công");
+        } catch (RuntimeException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/users";
     }
 
 }

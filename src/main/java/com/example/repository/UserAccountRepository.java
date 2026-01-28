@@ -1,6 +1,6 @@
 package com.example.repository;
 
-import com.example.model.UserAccount;
+import com.example.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,28 +16,30 @@ public class UserAccountRepository {
     }
 
     // ===== GET ALL USERS (HIỂN THỊ ROLE NAME) =====
-    public List<UserAccount> findAll() {
+    public List<User> findAll() {
         String sql = """
-            SELECT u.user_id,
-                   u.full_name,
-                   u.email,
-                   r.role_name,
-                   u.status
-            FROM users u
-            JOIN roles r ON u.role_id = r.role_id
-        """;
+        SELECT u.user_id,
+               u.full_name,
+               u.email,
+               r.role_name,
+               u.status
+        FROM users u
+        JOIN roles r ON u.role_id = r.role_id
+        WHERE u.status = 1
+    """;
 
         return jdbc.query(sql, (rs, rowNum) -> {
-            UserAccount u = new UserAccount();
+            User u = new User();
             u.setUserId(rs.getInt("user_id"));
             u.setFullName(rs.getString("full_name"));
             u.setEmail(rs.getString("email"));
-            u.setRoleName(rs.getString("role_name")); // 🔥 HIỂN THỊ ADMIN / TEACHER / STUDENT
-            u.setStatus(rs.getInt("status") == 1);
+            u.setRoleName(rs.getString("role_name"));
+            u.setStatus(true);
             return u;
         });
     }
-    public void insert(UserAccount user) {
+
+    public void insert(User user) {
         String sql = """
         INSERT INTO users(full_name, email, password, role_id, status)
         VALUES (?, ?, ?, ?, ?)
@@ -53,7 +55,7 @@ public class UserAccountRepository {
         );
     }
 
-    public UserAccount findById(int id) {
+    public User findById(int id) {
         String sql = """
         SELECT u.user_id,
                u.full_name,
@@ -67,7 +69,7 @@ public class UserAccountRepository {
     """;
 
         return jdbc.queryForObject(sql, (rs, rowNum) -> {
-            UserAccount u = new UserAccount();
+            User u = new User();
             u.setUserId(rs.getInt("user_id"));
             u.setFullName(rs.getString("full_name"));
             u.setEmail(rs.getString("email"));
@@ -77,7 +79,7 @@ public class UserAccountRepository {
             return u;
         }, id);
     }
-    public void update(UserAccount user) {
+    public void update(User user) {
         String sql = """
         UPDATE users
         SET full_name = ?,
@@ -95,5 +97,10 @@ public class UserAccountRepository {
         );
     }
 
+    public void softDelete(int userId) {
+        String sql = "UPDATE users SET status = 0 WHERE user_id = ?";
+        jdbc.update(sql, userId);
+    }
 
 }
+

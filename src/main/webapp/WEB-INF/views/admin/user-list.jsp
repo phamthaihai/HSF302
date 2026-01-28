@@ -18,6 +18,7 @@
     <a href="${pageContext.request.contextPath}/admin/dashboard"
        class="btn btn-secondary">
         ⬅ Back to Dashboard
+
     </a>
 </div>
 
@@ -39,6 +40,11 @@
             <td>
                 <a href="${pageContext.request.contextPath}/admin/users/edit/${u.userId}">
                     Update
+                </a>
+                <a href="${pageContext.request.contextPath}/admin/users/delete/${u.userId}"
+                   onclick="return confirm('Bạn có chắc muốn vô hiệu hóa tài khoản này?')"
+                   style="color:red">
+                    Delete
                 </a>
             </td>
         </tr>

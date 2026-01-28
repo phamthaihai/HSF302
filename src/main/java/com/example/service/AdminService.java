@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.model.UserAccount;
+import com.example.model.User;
 import com.example.repository.UserAccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ public class AdminService {
         this.repo = repo;
     }
 
-    public List<UserAccount> getAllUsers() {
+    public List<User> getAllUsers() {
         return repo.findAll();
     }
 
-    public void addUser(UserAccount user) {
+    public void addUser(User user) {
 
         String fullName = user.getFullName();
         String email = user.getEmail();
@@ -57,11 +57,11 @@ public class AdminService {
         repo.insert(user);
     }
 
-    public UserAccount getUserById(int id) {
+    public User getUserById(int id) {
         return repo.findById(id);
     }
 
-    public void updateUser(UserAccount user) {
+    public void updateUser(User user) {
 
         String fullName = user.getFullName();
         String email = user.getEmail();
@@ -97,6 +97,22 @@ public class AdminService {
 
         repo.update(user);
     }
+
+    public void deleteUser(int userId) {
+
+        User user = repo.findById(userId);
+        if (user == null) {
+            throw new RuntimeException("User không tồn tại");
+        }
+
+        // nếu đã bị xóa rồi
+        if (!user.isStatus()) {
+            throw new RuntimeException("User đã bị vô hiệu hóa trước đó");
+        }
+
+        repo.softDelete(userId);
+    }
+
 
 }
 

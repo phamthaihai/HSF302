@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;
     background: #f4f6f9;
     padding: 40px;
 }
@@ -7,44 +7,51 @@ body {
 h2 {
     text-align: center;
     margin-bottom: 25px;
+    color: #2c3e50;
 }
 
 form {
-    width: 400px;
+    width: 420px;
     margin: auto;
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
 label {
-    font-weight: bold;
+    font-weight: 600;
+    margin-top: 15px;
+    display: block;
 }
 
 input, select {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
 }
 
 button {
     width: 100%;
-    padding: 10px;
-    background: #28a745;
-    color: white;
+    margin-top: 25px;
+    padding: 12px;
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
+    cursor: pointer;
 }
 
 button:hover {
-    background: #218838;
+    opacity: 0.9;
 }
 
 a {
     display: block;
-    margin-top: 15px;
+    margin-top: 18px;
     text-align: center;
     text-decoration: none;
     color: #007bff;
