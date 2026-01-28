@@ -17,7 +17,7 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @GetMapping("/courses")
+    @RequestMapping("/admin/courses")
     public String list(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "minPrice", required = false) Double minPrice,

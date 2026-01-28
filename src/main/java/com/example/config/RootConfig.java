@@ -23,13 +23,14 @@ import java.util.Properties;
 @ComponentScan(basePackages = "com.example")
 public class RootConfig {
 
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        ds.setUrl("jdbc:sqlserver://localhost:1433;databaseName=HSF_ASSIGNMENT1;encrypt=true;trustServerCertificate=true;");
-        ds.setUsername("sa");
-        ds.setPassword("sa");
+        ds.setUrl("jdbc:sqlserver://localhost:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
+        ds.setUsername("Nam");
+        ds.setPassword("123456");
         return ds;
     }
 
