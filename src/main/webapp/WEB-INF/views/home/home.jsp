@@ -100,7 +100,7 @@
           <span class="btn-arrow">→</span>
         </a>
 
-        <a class="btn btn-ghost" href="${pageContext.request.contextPath}/my-courses">
+        <a class="btn btn-ghost" href="${pageContext.request.contextPath}/student/my-courses">
           🛒 Khoá học đã mua
           <span class="btn-arrow">→</span>
         </a>
