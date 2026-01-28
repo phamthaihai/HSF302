@@ -207,13 +207,14 @@ a { color: inherit; }
 }
 .toggle:hover { background: rgba(2,6,23,.06); transform: translateY(-1px); }
 
-.row {
+.auth-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
     margin-top: 12px;
 }
+
 
 .check {
     display: flex;

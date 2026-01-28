@@ -20,18 +20,21 @@
     </c:when>
 
     <c:otherwise>
+        <!-- Grid cards -->
         <div class="row g-3">
             <c:forEach var="c" items="${courses}">
+                <!-- 1 cột (mobile), 2 cột (md), 3 cột (lg) -->
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card h-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <h5 class="card-title mb-1"><c:out value="${c.title}"/></h5>
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">
+                                    <c:out value="${c.title}"/>
+                                </h5>
                                 <span class="badge badge-soft">ACTIVE</span>
                             </div>
 
-                            <!-- QUAN TRỌNG: description có thể không tồn tại -->
-                            <p class="text-muted small mb-3" style="min-height: 42px;">
+                            <p class="text-muted small mb-3 flex-grow-1">
                                 <c:out value="${c.description != null ? c.description : ''}"/>
                             </p>
 
