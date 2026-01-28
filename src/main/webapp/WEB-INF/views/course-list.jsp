@@ -26,6 +26,30 @@
 
 <div class="container">
     <h2 class="text-center mb-4">Quản lý Khám phá các khóa học</h2>
+    <form action="courses" method="get" class="row g-2 mb-4">
+        <div class="col-md-4">
+            <input type="text" name="keyword" class="form-control"
+                   placeholder="Tìm theo tên khóa học"
+                   value="${param.keyword}">
+        </div>
+
+        <div class="col-md-3">
+            <input type="number" name="minPrice" class="form-control"
+                   placeholder="Giá từ"
+                   value="${param.minPrice}">
+        </div>
+
+        <div class="col-md-3">
+            <input type="number" name="maxPrice" class="form-control"
+                   placeholder="Giá đến"
+                   value="${param.maxPrice}">
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <c:forEach var="course" items="${courses}">
             <div class="col">

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -72,10 +74,35 @@ public class CourseLessonRepository {
             return l;
         }, courseId);
     }
+    public List<Course> search(String keyword, Double minPrice, Double maxPrice) {
+        StringBuilder sql = new StringBuilder("SELECT * FROM courses WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND title LIKE ?");
+            params.add("%" + keyword + "%");
+        }
+
+        if (minPrice != null) {
+            sql.append(" AND price >= ?");
+            params.add(minPrice);
+        }
+
+        if (maxPrice != null) {
+            sql.append(" AND price <= ?");
+            params.add(maxPrice);
+        }
+
+        return jdbcTemplate.query(
+                sql.toString(),
+                params.toArray(),
+                new BeanPropertyRowMapper<>(Course.class)
+        );
+    }
+
 
     public void insertLesson(Lesson l) {
         String sql = "INSERT INTO lessons (course_id, title, content, video_url) VALUES (?, ?, ?, ?)";
-        // Phải kiểm tra null để tránh lỗi l.getCourse().getCourseId()
         Integer courseId = (l.getCourse() != null) ? l.getCourse().getCourseId() : null;
         jdbcTemplate.update(sql, courseId, l.getTitle(), l.getContent(), l.getVideoUrl());
     }

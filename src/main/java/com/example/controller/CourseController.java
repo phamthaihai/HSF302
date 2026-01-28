@@ -18,10 +18,19 @@ public class CourseController {
     private CourseService courseService;
 
     @GetMapping("/courses")
-    public String list(Model model) {
-        model.addAttribute("courses", courseService.getAllCourses());
+    public String list(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            Model model
+    ) {
+        model.addAttribute(
+                "courses",
+                courseService.searchCourses(keyword, minPrice, maxPrice)
+        );
         return "course-list";
     }
+
 
     @GetMapping("/admin/course/add")
     public String showAddCourse(Model model) {

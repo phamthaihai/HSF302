@@ -44,6 +44,9 @@ public class CourseService {
     public void deleteLesson(int id) {
         repo.deleteLesson(id);
     }
+    public List<Course> searchCourses(String keyword, Double minPrice, Double maxPrice) {
+        return repo.search(keyword, minPrice, maxPrice);
+    }
 
     public void saveLesson(Lesson lesson, int courseId) {
         if (lesson.getCourse() == null) {
