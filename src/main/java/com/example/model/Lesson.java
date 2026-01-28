@@ -14,13 +14,13 @@ public class Lesson {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "video_url")
+    @Column(name = "video_url", nullable = false)
     private String videoUrl;
 
     public Lesson() {}

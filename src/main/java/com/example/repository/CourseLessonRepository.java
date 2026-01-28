@@ -37,9 +37,7 @@ public class CourseLessonRepository {
         jdbcTemplate.update("DELETE FROM courses WHERE course_id = ?", id);
     }
 
-    // --- LESSON METHODS ---
 
-    // Sửa lỗi mapping: Vì JdbcTemplate không tự map Course object được
     public Lesson findLessonById(int lessonId) {
         String sql = "SELECT * FROM lessons WHERE lesson_id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {

@@ -6,14 +6,17 @@ import com.example.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+
+
 
 @Controller
 public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    // --- COURSE ---
     @GetMapping("/courses")
     public String list(Model model) {
         model.addAttribute("courses", courseService.getAllCourses());
@@ -33,8 +36,14 @@ public class CourseController {
     }
 
     @PostMapping("/admin/course/save")
-    public String saveCourse(@ModelAttribute("course") Course course) {
-        // Kiểm tra null trước khi so sánh > 0 cho kiểu Integer
+    public String saveCourse(
+            @Valid @ModelAttribute("course") Course course,
+            BindingResult result
+    ) {
+        if (result.hasErrors()) {
+            return "course-form";
+        }
+
         if (course.getCourseId() != null && course.getCourseId() > 0) {
             courseService.updateCourse(course);
         } else {
@@ -49,14 +58,12 @@ public class CourseController {
         return "redirect:/courses";
     }
 
-    // --- LESSON ---
     @GetMapping("/course-detail")
     public String detail(@RequestParam("id") int id, Model model) {
         model.addAttribute("course", courseService.getCourseDetail(id));
         model.addAttribute("lessons", courseService.getLessons(id));
 
         Lesson newLesson = new Lesson();
-        // Quan trọng: Khởi tạo đối tượng Course bên trong Lesson để tránh NullPointerException ở view
         Course c = new Course();
         c.setCourseId(id);
         newLesson.setCourse(c);
@@ -74,14 +81,12 @@ public class CourseController {
 
     @PostMapping("/instructor/lesson/save")
     public String saveLesson(@ModelAttribute("lesson") Lesson lesson, @RequestParam("courseId") int courseId) {
-        // Gọi hàm saveLesson đã sửa ở Service để xử lý gán Course ID
         courseService.saveLesson(lesson, courseId);
         return "redirect:/course-detail?id=" + courseId;
     }
 
     @PostMapping("/instructor/lesson/add")
     public String addLesson(@ModelAttribute("newLesson") Lesson lesson, @RequestParam("courseId") int courseId) {
-        // Đảm bảo bài học mới được gán đúng khóa học trước khi lưu
         courseService.saveLesson(lesson, courseId);
         return "redirect:/course-detail?id=" + courseId;
     }
