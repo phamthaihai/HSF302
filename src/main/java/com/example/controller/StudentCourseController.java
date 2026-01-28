@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import jakarta.servlet.http.HttpSession;
 import com.example.model.Course;
 import com.example.model.Feedback;
 import com.example.model.Lesson;
@@ -39,13 +40,24 @@ public class StudentCourseController {
         this.lessonRepository = lessonRepository;
     }
 
-    private int currentUserId() {
-        return 3;
+    private Integer getUserId(HttpSession session) {
+        Object idObj = session.getAttribute("currentUserId");
+        if (idObj == null) return null;
+        if (idObj instanceof Number) return ((Number) idObj).intValue();
+        return Integer.parseInt(idObj.toString());
+    }
+
+    private boolean isStudent(HttpSession session){
+        Object roleObj = session.getAttribute("currentUserRole");
+        return roleObj != null && "STUDENT".equalsIgnoreCase(roleObj.toString());
     }
 
     @GetMapping("/my-courses")
-    public String myCourses(Model model) {
-        int userId = currentUserId();
+    public String myCourses(HttpSession session, Model model) {
+        Integer userId = getUserId(session);
+        if (userId == null) return "redirect:/login";
+        if (!isStudent(session)) return "redirect:/login";
+
         model.addAttribute("courses", studentCourseService.getMyCourses(userId));
         return "student/my-courses";
     }
@@ -53,8 +65,12 @@ public class StudentCourseController {
     @GetMapping("/player")
     public String player(@RequestParam("courseId") int courseId,
                          @RequestParam(value = "lessonId", required = false) Integer lessonId,
+                         HttpSession session,
                          Model model) {
-        int userId = currentUserId();
+        Integer userId = getUserId(session);
+        if (userId == null) return "redirect:/login";
+        if (!isStudent(session)) return "redirect:/login";
+
         studentCourseService.requireRegistered(userId, courseId);
 
         Course course = courseRepository.findById(courseId)
@@ -62,9 +78,13 @@ public class StudentCourseController {
 
         List<Lesson> lessons = playerService.getLessons(courseId);
 
-        if (lessonId == null && !lessons.isEmpty())
+        if (lessonId == null && !lessons.isEmpty()) {
             lessonId = lessons.get(0).getLessonId();
-        Lesson currentLesson = (lessonId == null) ? null : lessonRepository.findById(lessonId).orElse(null);
+        }
+
+        Lesson currentLesson = (lessonId == null)
+                ? null
+                : lessonRepository.findById(lessonId).orElse(null);
 
         model.addAttribute("course", course);
         model.addAttribute("lessons", lessons);
@@ -76,16 +96,26 @@ public class StudentCourseController {
 
     @PostMapping("/complete-lesson")
     public String completeLesson(@RequestParam("courseId") int courseId,
-                                 @RequestParam("lessonId") int lessonId) {
-        int userId = currentUserId();
+                                 @RequestParam("lessonId") int lessonId,
+                                 HttpSession session) {
+        Integer userId = getUserId(session);
+        if (userId == null) return "redirect:/login";
+        if (!isStudent(session)) return "redirect:/login";
+
         studentCourseService.requireRegistered(userId, courseId);
         playerService.markCompleted(userId, lessonId);
+
         return "redirect:/student/player?courseId=" + courseId + "&lessonId=" + lessonId;
     }
 
     @GetMapping("/feedback")
-    public String feedbackForm(@RequestParam("courseId") int courseId, Model model) {
-        int userId = currentUserId();
+    public String feedbackForm(@RequestParam("courseId") int courseId,
+                               HttpSession session,
+                               Model model) {
+        Integer userId = getUserId(session);
+        if (userId == null) return "redirect:/login";
+        if (!isStudent(session)) return "redirect:/login";
+
         studentCourseService.requireRegistered(userId, courseId);
 
         Feedback fb = feedbackService.getMyFeedback(userId, courseId);
@@ -98,8 +128,12 @@ public class StudentCourseController {
     @PostMapping("/feedback")
     public String submitFeedback(@RequestParam("courseId") int courseId,
                                  @RequestParam("rating") int rating,
-                                 @RequestParam("comment") String comment) {
-        int userId = currentUserId();
+                                 @RequestParam("comment") String comment,
+                                 HttpSession session) {
+        Integer userId = getUserId(session);
+        if (userId == null) return "redirect:/login";
+        if (!isStudent(session)) return "redirect:/login";
+
         studentCourseService.requireRegistered(userId, courseId);
 
         feedbackService.submit(userId, courseId, rating, comment);
@@ -107,8 +141,13 @@ public class StudentCourseController {
     }
 
     @GetMapping("/certificate")
-    public String certificate(@RequestParam("courseId") int courseId, Model model) {
-        int userId = currentUserId();
+    public String certificate(@RequestParam("courseId") int courseId,
+                              HttpSession session,
+                              Model model) {
+        Integer userId = getUserId(session);
+        if (userId == null) return "redirect:/login";
+        if (!isStudent(session)) return "redirect:/login";
+
         studentCourseService.requireRegistered(userId, courseId);
 
         Certificate cert = certificateService.issueIfEligible(userId, courseId);
