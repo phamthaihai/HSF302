@@ -55,6 +55,7 @@
 
                 <%-- Progress + Certificate (LUÔN HIỆN) --%>
                 <c:set var="totalLessons" value="${empty lessons ? 0 : fn:length(lessons)}"/>
+                <c:set var="isCompleted" value="${totalLessons > 0 && doneLessons >= totalLessons}"/>
                 <c:set var="doneLessons" value="${empty completedLessonIds ? 0 : fn:length(completedLessonIds)}"/>
                 <c:set var="pct" value="${totalLessons == 0 ? 0 : (doneLessons * 100 / totalLessons)}"/>
 
@@ -125,17 +126,23 @@
                               action="${pageContext.request.contextPath}/student/complete-lesson">
                             <input type="hidden" name="courseId" value="${course.courseId}"/>
                             <input type="hidden" name="lessonId" value="${currentLesson.lessonId}"/>
-                            <button class="btn btn-success">Mark as Completed</button>
+                            <button class="btn btn-success w-100" ${currentDone ? "disabled" : ""}>
+                                    ${currentDone ? "Completed" : "Mark as Completed"}
+                            </button>
 
-                            <a class="btn btn-outline-primary ms-2"
-                               href="${pageContext.request.contextPath}/student/feedback?courseId=${course.courseId}">
-                                Feedback
-                            </a>
+                            <c:if test="${isCompleted}">
+                                <div class="d-flex gap-2 mt-2">
+                                    <a class="btn btn-outline-primary flex-fill"
+                                       href="${pageContext.request.contextPath}/student/feedback?courseId=${course.courseId}">
+                                        Feedback
+                                    </a>
 
-                            <a class="btn btn-outline-dark ms-2"
-                               href="${pageContext.request.contextPath}/student/certificate?courseId=${course.courseId}">
-                                Certificate
-                            </a>
+                                    <a class="btn btn-outline-dark flex-fill"
+                                       href="${pageContext.request.contextPath}/student/certificate?courseId=${course.courseId}">
+                                        Certificate
+                                    </a>
+                                </div>
+                            </c:if>
                         </form>
                     </c:otherwise>
                 </c:choose>

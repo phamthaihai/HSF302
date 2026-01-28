@@ -26,6 +26,9 @@ public class Certificate {
     @Column(name = "certificate_code", unique = true)
     private String certificateCode;
 
+    public Certificate() {
+    }
+
     public Integer getCertificateId() {
         return certificateId;
     }
