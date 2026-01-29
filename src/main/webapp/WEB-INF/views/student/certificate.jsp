@@ -16,9 +16,9 @@
         </div>
     </div>
 
-    <a class="btn btn-outline-secondary"
+    <a class="btn btn-outline-secondary btn-sm w-auto px-3 ms-auto"
        href="${pageContext.request.contextPath}/student/player?courseId=${course.courseId}">
-        Back to Player
+        Back to the course
     </a>
 </div>
 
@@ -78,9 +78,6 @@
             </div>
         </div>
 
-        <div class="mt-3 no-print">
-            <button class="btn btn-primary" onclick="window.print()">Print</button>
-        </div>
     </c:otherwise>
 </c:choose>
 
