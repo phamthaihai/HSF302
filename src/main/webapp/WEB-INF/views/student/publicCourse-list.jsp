@@ -38,16 +38,7 @@
             line-height: 1.6;
         }
 
-        .hero-btn {
-            display: inline-block;
-            margin: 20px 0;
-            padding: 12px 22px;
-            background: #facc15;
-            color: #000;
-            font-weight: 700;
-            border-radius: 999px;
-            text-decoration: none;
-        }
+
 
         .stats {
             display: flex;
@@ -228,24 +219,69 @@
             text-align: center;
             color: var(--muted);
         }
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cart-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .cart-link:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .thumb {
+            height: 170px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
     </style>
+
 </head>
 
 <body>
+
+
+
 <div class="container">
 
     <div class="top-bar">
         <div class="brand">📚 HSF Academy</div>
 
-        <form class="search"
-              action="${pageContext.request.contextPath}/courses"
-              method="get">
-            <input type="text" name="keyword"
-                   placeholder="Tìm kiếm khóa học..."
-                   value="${param.keyword}">
-            <button>Search</button>
-        </form>
+        <div class="actions">
+
+            <!-- SEARCH -->
+            <form class="search"
+                  action="${pageContext.request.contextPath}/courses"
+                  method="get">
+                <input type="text" name="keyword"
+                       placeholder="Tìm kiếm khóa học..."
+                       value="${param.keyword}">
+                <button>Search</button>
+            </form>
+
+            <!-- CART -->
+            <a href="${pageContext.request.contextPath}/cart/view"
+               class="cart-link">
+                🛒 Giỏ hàng
+            </a>
+
+        </div>
     </div>
+
 
     <c:if test="${empty courses}">
         <div class="empty">❌ Không tìm thấy khóa học</div>
@@ -257,7 +293,6 @@
                 HSR Academy giúp bạn nâng cao kỹ năng lập trình
                 với các khóa học được xây dựng bài bản và thực tế.
             </p>
-            <a class="hero-btn" href="#">Bắt đầu học ngay</a>
 
             <div class="stats">
                 <div><strong>12k+</strong><span>Học viên</span></div>
@@ -276,7 +311,10 @@
         <c:forEach items="${courses}" var="c">
             <div class="card">
 
-                <div class="thumb"></div>
+                <div class="thumb"
+                     style="background-image: url('${c.imageUrl}')">
+                </div>
+
 
                 <div class="content">
                     <div class="title">${c.title}</div>

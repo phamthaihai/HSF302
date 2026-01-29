@@ -27,6 +27,9 @@ public class Payment {
     @Column(name = "status")
     private String status; // SUCCESS/FAILED
 
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -65,7 +68,13 @@ public class Payment {
     public void setStatus(String status) {
         this.status = status;
     }
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
 
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

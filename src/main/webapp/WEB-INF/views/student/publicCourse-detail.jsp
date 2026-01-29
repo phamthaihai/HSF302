@@ -105,10 +105,24 @@
             background: #1d4ed8;
             color: #fff;
         }
+        .btn-cart {
+            background: #e5e7eb;
+            color: #1f2937;
+            border-radius: 14px;
+            padding: 12px 22px;
+            font-weight: 600;
+            border: none;
+        }
+
+        .btn-cart:hover {
+            background: #d1d5db;
+        }
+
     </style>
 </head>
 
 <body>
+
 
 <div class="container mt-4 mb-5">
 
@@ -164,11 +178,20 @@
                                       groupingUsed="true"/> VND
                 </div>
             </div>
-
-            <a href="${pageContext.request.contextPath}/enroll?courseId=${course.courseId}"
+            <!-- ADD TO CART -->
+            <form action="${pageContext.request.contextPath}/cart/add"
+                  method="post"
+                  style="margin:0;">
+                <input type="hidden" name="courseId" value="${course.courseId}">
+                <button type="submit" class="btn-cart">
+                    🛒 Add to Cart
+                </button>
+            </form>
+            <a href="${pageContext.request.contextPath}/payment/detail?courseId=${course.courseId}"
                class="btn-enroll">
-                🚀 Đăng ký ngay
+                💳 Thanh toán
             </a>
+
         </div>
     </div>
 
