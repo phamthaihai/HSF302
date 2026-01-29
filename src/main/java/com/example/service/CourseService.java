@@ -61,4 +61,8 @@ public class CourseService {
             repo.insertLesson(lesson);
         }
     }
+    public List<Course> getCoursesByIds(List<Integer> ids) {
+        return repo.findByIds(ids);
+    }
+
 }

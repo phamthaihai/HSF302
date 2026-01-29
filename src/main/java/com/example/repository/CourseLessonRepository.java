@@ -111,6 +111,18 @@ public class CourseLessonRepository {
         Integer courseId = (l.getCourse() != null) ? l.getCourse().getCourseId() : null;
         jdbcTemplate.update(sql, l.getTitle(), l.getVideoUrl(), l.getContent(), courseId, l.getLessonId());
     }
+    public List<Course> findByIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return new ArrayList<>();
+
+        String inSql = String.join(",", ids.stream().map(id -> "?").toArray(String[]::new));
+        String sql = "SELECT * FROM courses WHERE course_id IN (" + inSql + ")";
+
+        return jdbcTemplate.query(
+                sql,
+                ids.toArray(),
+                new BeanPropertyRowMapper<>(Course.class)
+        );
+    }
 
     public void deleteLesson(int id) {
         jdbcTemplate.update("DELETE FROM lessons WHERE lesson_id = ?", id);
