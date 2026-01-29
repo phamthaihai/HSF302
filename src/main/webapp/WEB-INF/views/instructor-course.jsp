@@ -47,9 +47,6 @@
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container d-flex justify-content-between">
         <a class="navbar-brand" href="courses">HSR ACADEMY</a>
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#courseModal" onclick="prepareAdd()">
-            + Thêm khóa học (Admin)
-        </button>
     </div>
 </nav>
 <div class="back-container">
@@ -87,10 +84,6 @@
         <c:forEach var="course" items="${courses}">
             <div class="col">
                 <div class="card h-100 course-card">
-                    <div class="admin-controls">
-                        <button class="btn btn-sm btn-warning" onclick="prepareEdit('${course.courseId}', '${course.title}', '${course.description}', '${course.price}', '${course.imageUrl}')" data-bs-toggle="modal" data-bs-target="#courseModal">Sửa</button>
-                        <a href="admin/course/delete?id=${course.courseId}" class="btn btn-sm btn-danger" onclick="return confirm('Xóa khóa học này?')">Xóa</a>
-                    </div>
 
                     <img src="${course.imageUrl}" class="card-img-top" style="height: 180px; object-fit: cover;">
                     <div class="card-body">
@@ -106,55 +99,5 @@
         </c:forEach>
     </div>
 </div>
-
-<div class="modal fade" id="courseModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form action="admin/course/save" method="post" class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Thêm Khóa Học</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" name="courseId" id="courseId">
-                <div class="mb-3">
-                    <label class="form-label">Tiêu đề</label>
-                    <input type="text" name="title" id="title" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Mô tả</label>
-                    <textarea name="description" id="description" class="form-control" rows="3"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Giá tiền</label>
-                    <input type="number" name="price" id="price" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Link ảnh (URL)</label>
-                    <input type="text" name="imageUrl" id="imageUrl" class="form-control">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    function prepareAdd() {
-        document.getElementById('modalTitle').innerText = "Thêm Khóa Học Mới";
-        document.getElementById('courseId').value = "0";
-        document.getElementById('title').value = "";
-    }
-    function prepareEdit(id, title, desc, price, img) {
-        document.getElementById('modalTitle').innerText = "Cập nhật Khóa Học";
-        document.getElementById('courseId').value = id;
-        document.getElementById('title').value = title;
-        document.getElementById('description').value = desc;
-        document.getElementById('price').value = price;
-        document.getElementById('imageUrl').value = img;
-    }
-</script>
 </body>
 </html>

@@ -30,7 +30,7 @@ public class RootConfig {
         ds.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         ds.setUrl("jdbc:sqlserver://localhost:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
         ds.setUsername("sa");
-        ds.setPassword("123");
+        ds.setPassword("12345");
         return ds;
     }
 

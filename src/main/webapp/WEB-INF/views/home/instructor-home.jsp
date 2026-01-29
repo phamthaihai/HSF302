@@ -74,7 +74,7 @@
                     <span class="btn-arrow">→</span>
                 </a>
 
-                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/courses">
+                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/instructor/courses">
                     📚 Manage lesson
                     <span class="btn-arrow">→</span>
                 </a>

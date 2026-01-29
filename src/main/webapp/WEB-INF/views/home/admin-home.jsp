@@ -96,7 +96,7 @@
                     <span class="btn-arrow">→</span>
                 </a>
 
-                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/courses">
+                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/admin/courses">
                     📚 Quản lý Courses
                     <span class="btn-arrow">→</span>
                 </a>

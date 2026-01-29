@@ -49,7 +49,6 @@ public class CourseLessonRepository {
             l.setContent(rs.getString("content"));
             l.setVideoUrl(rs.getString("video_url"));
 
-            // Khởi tạo object Course và gán ID vào
             Course c = new Course();
             c.setCourseId(rs.getInt("course_id"));
             l.setCourse(c);
