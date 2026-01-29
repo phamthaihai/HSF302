@@ -29,6 +29,9 @@ public class Feedback {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public Feedback() {
+    }
+
     public Integer getFeedbackId() {
         return feedbackId;
     }

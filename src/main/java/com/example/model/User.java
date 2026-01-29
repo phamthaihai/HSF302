@@ -28,6 +28,9 @@ public class User {
     @Column(name = "status")
     private boolean status;
 
+    public User() {
+    }
+
     // ===== GETTER / SETTER =====
 
     public Integer getUserId() {

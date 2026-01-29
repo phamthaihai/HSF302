@@ -33,6 +33,9 @@ public class Payment {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public Payment() {
+    }
+
     public Integer getPaymentId() {
         return paymentId;
     }

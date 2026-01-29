@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+
 <c:set var="pageTitle" value="Course Player"/>
 <%@ include file="/WEB-INF/views/_layout/header.jsp" %>
 
@@ -10,6 +11,12 @@
     </h3>
     <div class="text-muted">Select a lesson on the left. Mark it completed when done.</div>
 </div>
+
+<%-- ===== Progress variables (PHẢI set đúng thứ tự) ===== --%>
+<c:set var="totalLessons" value="${empty lessons ? 0 : fn:length(lessons)}"/>
+<c:set var="doneLessons" value="${empty completedLessonIds ? 0 : fn:length(completedLessonIds)}"/>
+<c:set var="isCompleted" value="${totalLessons > 0 && doneLessons >= totalLessons}"/>
+<c:set var="pct" value="${totalLessons == 0 ? 0 : (doneLessons * 100 / totalLessons)}"/>
 
 <div class="row g-3">
     <!-- Sidebar lessons -->
@@ -29,23 +36,24 @@
                     <c:otherwise>
                         <div class="list-group">
                             <c:forEach var="l" items="${lessons}">
+                                <%-- check lesson done --%>
+                                <c:set var="done" value="false"/>
+                                <c:forEach var="cid" items="${completedLessonIds}">
+                                    <c:if test="${cid == l.lessonId}">
+                                        <c:set var="done" value="true"/>
+                                    </c:if>
+                                </c:forEach>
+
                                 <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
-                  ${currentLesson != null && currentLesson.lessonId == l.lessonId ? 'active' : ''}"
+                                  ${currentLesson != null && currentLesson.lessonId == l.lessonId ? 'active' : ''}"
                                    href="${pageContext.request.contextPath}/student/player?courseId=${course.courseId}&lessonId=${l.lessonId}">
 
-                  <span class="text-truncate" style="max-width: 220px;">
-                    <c:out value="${l.title}"/>
-                  </span>
-
-                                    <c:set var="done" value="false"/>
-                                    <c:forEach var="cid" items="${completedLessonIds}">
-                                        <c:if test="${cid == l.lessonId}">
-                                            <c:set var="done" value="true"/>
-                                        </c:if>
-                                    </c:forEach>
+                                    <span class="text-truncate" style="max-width: 220px;">
+                                        <c:out value="${l.title}"/>
+                                    </span>
 
                                     <span class="badge ${done ? 'text-bg-success' : 'text-bg-secondary'}">
-                                            ${done ? 'Done' : 'Todo'}
+                                        <c:out value="${done ? 'Done' : 'Todo'}"/>
                                     </span>
                                 </a>
                             </c:forEach>
@@ -53,11 +61,7 @@
                     </c:otherwise>
                 </c:choose>
 
-                <%-- Progress + Certificate (LUÔN HIỆN) --%>
-                <c:set var="totalLessons" value="${empty lessons ? 0 : fn:length(lessons)}"/>
-                <c:set var="doneLessons" value="${empty completedLessonIds ? 0 : fn:length(completedLessonIds)}"/>
-                <c:set var="pct" value="${totalLessons == 0 ? 0 : (doneLessons * 100 / totalLessons)}"/>
-
+                <!-- Progress -->
                 <div class="mt-3">
                     <div class="d-flex justify-content-between small text-muted mb-1">
                         <span>Progress</span>
@@ -75,22 +79,25 @@
                                 Khóa học chưa có bài học nên chưa thể cấp chứng chỉ.
                             </div>
                         </c:when>
-                        <c:when test="${doneLessons < totalLessons}">
+                        <c:when test="${!isCompleted}">
                             <div class="alert alert-info small mt-3 mb-2">
-                                Chưa hoàn thành khóa học. Hoàn thành hết bài để nhận chứng chỉ.
+                                Chưa hoàn thành khóa học. Hoàn thành hết bài để mở Feedback & Certificate.
                             </div>
                         </c:when>
                         <c:otherwise>
                             <div class="alert alert-success small mt-3 mb-2">
-                                Bạn đã hoàn thành! Có thể xem/nhận chứng chỉ.
+                                Bạn đã hoàn thành! Có thể Feedback và xem/nhận chứng chỉ.
                             </div>
                         </c:otherwise>
                     </c:choose>
 
-                    <a class="btn btn-outline-dark w-100"
-                       href="${pageContext.request.contextPath}/student/certificate?courseId=${course.courseId}">
-                        View Certificate
-                    </a>
+                    <%-- Chỉ hiện Certificate khi hoàn thành --%>
+                    <c:if test="${isCompleted}">
+                        <a class="btn btn-outline-dark w-100"
+                           href="${pageContext.request.contextPath}/student/certificate?courseId=${course.courseId}">
+                            View Certificate
+                        </a>
+                    </c:if>
                 </div>
 
                 <a class="btn btn-outline-secondary w-100 mt-3"
@@ -121,22 +128,33 @@
                             <c:out value="${currentLesson.content}"/>
                         </div>
 
+                        <%-- check bài hiện tại đã done chưa --%>
+                        <c:set var="currentDone" value="false"/>
+                        <c:forEach var="cid" items="${completedLessonIds}">
+                            <c:if test="${cid == currentLesson.lessonId}">
+                                <c:set var="currentDone" value="true"/>
+                            </c:if>
+                        </c:forEach>
+
                         <form class="mt-3" method="post"
                               action="${pageContext.request.contextPath}/student/complete-lesson">
                             <input type="hidden" name="courseId" value="${course.courseId}"/>
                             <input type="hidden" name="lessonId" value="${currentLesson.lessonId}"/>
-                            <button class="btn btn-success">Mark as Completed</button>
 
-                            <a class="btn btn-outline-primary ms-2"
-                               href="${pageContext.request.contextPath}/student/feedback?courseId=${course.courseId}">
-                                Feedback
-                            </a>
+                            <button class="btn btn-success w-100"
+                                    <c:if test="${currentDone}">disabled</c:if>>
+                                <c:out value="${currentDone ? 'Completed' : 'Mark as Completed'}"/>
+                            </button>
 
-                            <a class="btn btn-outline-dark ms-2"
-                               href="${pageContext.request.contextPath}/student/certificate?courseId=${course.courseId}">
-                                Certificate
-                            </a>
+                                <%-- Chỉ hiện Feedback khi hoàn thành khóa học --%>
+                            <c:if test="${isCompleted}">
+                                <a class="btn btn-outline-primary w-100 mt-2"
+                                   href="${pageContext.request.contextPath}/student/feedback?courseId=${course.courseId}">
+                                    Feedback
+                                </a>
+                            </c:if>
                         </form>
+
                     </c:otherwise>
                 </c:choose>
             </div>

@@ -11,6 +11,7 @@ import com.example.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.time.format.DateTimeFormatter;
 
 import java.util.List;
 
@@ -154,6 +155,14 @@ public class StudentCourseController {
 
         model.addAttribute("course", courseRepository.findById(courseId).orElse(null));
         model.addAttribute("certificate", cert);
+
+        model.addAttribute("studentName", session.getAttribute("currentUserName"));
+
+        if (cert != null && cert.getIssueDate() != null) {
+            String issuedAtText = cert.getIssueDate()
+                    .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            model.addAttribute("issuedAtText", issuedAtText);
+        }
 
         return "student/certificate";
     }

@@ -40,7 +40,7 @@
 
                             <a class="btn btn-primary w-100"
                                href="${pageContext.request.contextPath}/student/player?courseId=${c.courseId}">
-                                Open Player
+                                Open Lesson
                             </a>
                         </div>
                     </div>

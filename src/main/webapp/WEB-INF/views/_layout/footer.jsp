@@ -3,7 +3,7 @@
 <footer class="border-top py-3 bg-white">
     <div class="container d-flex justify-content-between text-muted small">
         <span>StudyHub</span>
-        <span>Tomcat 10 + Spring MVC</span>
+        <span>Course</span>
     </div>
 </footer>
 

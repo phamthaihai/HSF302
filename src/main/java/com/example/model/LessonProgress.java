@@ -26,6 +26,9 @@ public class LessonProgress {
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
+    public LessonProgress() {
+    }
+
     public Integer getProgressId() {
         return progressId;
     }
