@@ -2,9 +2,12 @@ package com.example.service;
 
 import com.example.model.Lesson;
 import com.example.model.LessonProgress;
+import com.example.model.User;
 import com.example.repository.LessonProgressRepository;
 import com.example.repository.LessonRepository;
-import com.example.repository.UserRepository;
+import com.example.repository.UserAccountRepository; // 1. Đã sửa import đúng
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +17,17 @@ import java.util.List;
 @Service
 public class CoursePlayerService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final LessonRepository lessonRepository;
     private final LessonProgressRepository progressRepository;
-    private final UserRepository userRepository;
+    private final UserAccountRepository userRepository; // 2. Đổi tên class Repository
 
+    // 3. Cập nhật Constructor
     public CoursePlayerService(LessonRepository lessonRepository,
                                LessonProgressRepository progressRepository,
-                               UserRepository userRepository) {
+                               UserAccountRepository userRepository) {
         this.lessonRepository = lessonRepository;
         this.progressRepository = progressRepository;
         this.userRepository = userRepository;
@@ -41,7 +48,9 @@ public class CoursePlayerService {
         var lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RuntimeException("Lesson not found"));
 
-        var userRef = userRepository.getReferenceById(userId);
+        // Lưu ý: Đảm bảo bạn có class User trong package model.
+        // Nếu tên entity là UserAccount thì sửa User.class thành UserAccount.class
+        var userRef = entityManager.getReference(User.class, userId);
 
         LessonProgress lp = progressRepository
                 .findByUser_UserIdAndLesson_LessonId(userId, lessonId)

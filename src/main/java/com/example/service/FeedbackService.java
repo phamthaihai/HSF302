@@ -1,9 +1,12 @@
 package com.example.service;
 
 import com.example.model.Feedback;
+import com.example.model.User;
 import com.example.repository.CourseRepository;
 import com.example.repository.FeedbackRepository;
-import com.example.repository.UserRepository;
+import com.example.repository.UserAccountRepository; // 1. Import đúng
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,13 +15,17 @@ import java.time.LocalDateTime;
 @Service
 public class FeedbackService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private final FeedbackRepository feedbackRepository;
     private final CourseRepository courseRepository;
-    private final UserRepository userRepository;
+    private final UserAccountRepository userRepository; // 2. Đổi tên biến
 
+    // 3. Cập nhật Constructor
     public FeedbackService(FeedbackRepository feedbackRepository,
                            CourseRepository courseRepository,
-                           UserRepository userRepository) {
+                           UserAccountRepository userRepository) {
         this.feedbackRepository = feedbackRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
@@ -33,7 +40,9 @@ public class FeedbackService {
     public void submit(int userId, int courseId, int rating, String comment) {
         var course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
-        var userRef = userRepository.getReferenceById(userId);
+
+        // Dùng EntityManager để lấy reference User (giả sử Entity tên là User)
+        var userRef = entityManager.getReference(User.class, userId);
 
         Feedback f = feedbackRepository.findByUser_UserIdAndCourse_CourseId(userId, courseId)
                 .orElseGet(() -> {
