@@ -28,11 +28,16 @@ public class RootConfig {
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
         ds.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        ds.setUrl("jdbc:sqlserver://localhost:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
-        ds.setUsername("Nam");
-        ds.setPassword("123456");
+
+        // dùng IP máy host (macOS) thay vì localhost
+        ds.setUrl("jdbc:sqlserver://10.33.88.166:1433;databaseName=AssignmentHSF;encrypt=true;trustServerCertificate=true;");
+
+        ds.setUsername("sa");
+        ds.setPassword("VeryStr0ngP@ssw0rd");
         return ds;
     }
+
+
 
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {

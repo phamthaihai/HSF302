@@ -1,65 +1,60 @@
 package com.example.controller;
 
+import com.example.service.PublicCourseService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
 
-    private boolean notLoggedIn(HttpSession session) {
-        return session.getAttribute("currentUserName") == null;
-    }
+    @Autowired
+    private PublicCourseService publicCourseService;
 
-    private boolean hasRole(HttpSession session, String role) {
-        Object r = session.getAttribute("currentUserRole");
-        return r != null && role.equalsIgnoreCase(String.valueOf(r));
-    }
-
-    // 1. ĐỊA CHỈ GỐC: Tự động đẩy sang /home
+    /**
+     * ROOT "/" -> Home Guest
+     * - Nếu đã login thì chuyển qua /home (router theo role)
+     * - Nếu chưa login thì show guest + list course giống publicCourseList
+     */
     @GetMapping("/")
-    public String index() {
-        return "redirect:/home";
+    public String homeGuest(
+            @RequestParam(value = "q", required = false) String q,
+            Model model,
+            HttpSession session
+    ) {
+        // Nếu đã đăng nhập thì đưa về router /home
+        if (session.getAttribute("currentUserId") != null) {
+            return "redirect:/home";
+        }
+
+        // Lấy danh sách course giống PublicCourseList
+        if (q != null && !q.trim().isEmpty()) {
+            model.addAttribute("courses", publicCourseService.searchCourses(q.trim()));
+            model.addAttribute("q", q.trim());
+        } else {
+            model.addAttribute("courses", publicCourseService.getPublicCourses());
+            model.addAttribute("q", "");
+        }
+
+        // View home guest của bạn (bạn sẽ sửa JSP để bố cục giống publicCourseList + đổi màu xanh)
+        return "home/home_guest";
     }
 
-    // 2. NGÃ TƯ ĐIỀU HƯỚNG: Đây là endpoint bị thiếu dẫn đến lỗi 404
+    /**
+     * Router sau khi login (giữ như bạn đang làm)
+     * Nếu bạn đã có sẵn /home trong controller khác thì giữ 1 nơi thôi.
+     */
     @GetMapping("/home")
     public String homeRouter(HttpSession session) {
-        if (notLoggedIn(session)) return "redirect:/login";
+        Object role = session.getAttribute("currentUserRole");
+        if (role == null) return "redirect:/login";
 
-        String role = String.valueOf(session.getAttribute("currentUserRole"));
-
-        if ("ADMIN".equalsIgnoreCase(role)) return "redirect:/admin/home";
-        if ("INSTRUCTOR".equalsIgnoreCase(role)) return "redirect:/instructor/home";
-
-        return "home/home"; // Trả về view cho STUDENT (không redirect nữa để tránh vòng lặp)
-    }
-
-    // 3. ADMIN HOME
-    @GetMapping("/admin/home")
-    public String adminHome(HttpSession session, Model model) {
-        if (notLoggedIn(session)) return "redirect:/login";
-        if (!hasRole(session, "ADMIN")) return "redirect:/home";
-
-        setupModel(session, model);
-        return "home/admin-home";
-    }
-
-    // 4. INSTRUCTOR HOME
-    @GetMapping("/instructor/home")
-    public String instructorHome(HttpSession session, Model model) {
-        if (notLoggedIn(session)) return "redirect:/login";
-        if (!hasRole(session, "INSTRUCTOR")) return "redirect:/home";
-
-        setupModel(session, model);
-        return "home/instructor-home";
-    }
-
-    // Hàm phụ để tránh lặp code addAttribute
-    private void setupModel(HttpSession session, Model model) {
-        model.addAttribute("name", session.getAttribute("currentUserName"));
-        model.addAttribute("email", session.getAttribute("currentUserEmail"));
-        model.addAttribute("role", session.getAttribute("currentUserRole"));
+        String r = String.valueOf(role).toUpperCase();
+        if ("ADMIN".equals(r)) return "redirect:/admin/dashboard";
+        if ("INSTRUCTOR".equals(r)) return "redirect:/instructor/home";
+        return "redirect:/student/home";
     }
 }
