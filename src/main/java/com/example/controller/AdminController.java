@@ -18,9 +18,9 @@ public class AdminController {
     }
 
     // ================= DASHBOARD =================
-    @GetMapping("/dashboard")
+    @GetMapping("/home")
     public String dashboard() {
-        return "admin/dashboard";
+        return "home/admin-home";
     }
 
     // ================= USER LIST =================

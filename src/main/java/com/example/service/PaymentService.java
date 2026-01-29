@@ -2,7 +2,7 @@ package com.example.service;
 
 import com.example.model.*;
 import com.example.repository.PaymentRepository;
-import com.example.repository.UserRepository;
+import com.example.repository.UserAccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,20 +14,22 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepo;
     private final CourseService courseService;
-    private final UserRepository userRepo;
+    private final UserAccountRepository userRepo;
 
     public PaymentService(PaymentRepository paymentRepo,
                           CourseService courseService,
-                          UserRepository userRepo) {
+                          UserAccountRepository userRepo) {
         this.paymentRepo = paymentRepo;
         this.courseService = courseService;
         this.userRepo = userRepo;
     }
 
     public void payCourse(Integer userId, int courseId, String bank) {
+        User user = userRepo.findById(userId);
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user == null) {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
 
         Course course = courseService.getCourseDetail(courseId);
 
@@ -62,8 +64,10 @@ public class PaymentService {
     @Transactional
     public void payFromCart(Integer userId, Cart cart, String method) {
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepo.findById(userId);
+        if (user == null) {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
 
         for (CartItem item : cart.getItems()) {
 

@@ -91,10 +91,6 @@
                     <span class="btn-arrow">→</span>
                 </a>
 
-                <a class="btn btn-ghost" href="${pageContext.request.contextPath}/admin/roles">
-                    🔐 Quản lý Roles
-                    <span class="btn-arrow">→</span>
-                </a>
 
                 <a class="btn btn-ghost" href="${pageContext.request.contextPath}/admin/courses">
                     📚 Quản lý Courses

@@ -64,7 +64,7 @@ public class LoginController {
 
             // 3) Redirect theo role
             if ("ADMIN".equalsIgnoreCase(role)) {
-                return "redirect:/admin/dashboard";
+                return "redirect:/admin/home";
             }
 
             if ("INSTRUCTOR".equalsIgnoreCase(role)) {
